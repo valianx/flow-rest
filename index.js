@@ -53,7 +53,6 @@ app.post("/create_payment", async (req, res) => {
             console.log(error)
             return res.status(500).json(error)
         }
-
     )
 })
 
@@ -69,6 +68,49 @@ app.post('/getStatus', async (req, res) => {
         return res.status(200).json(response.data)
     }).catch(err => res.status(500).json(err))
 })
+
+app.post('/refund_create', async (req, res) => {
+    const { refundCommerceOrder, receiverEmail, amount } = req.body
+    let urlCallBack = 'https://0d1bd9e31952.ngrok.io/refund'
+
+    let data = "amount" + amount + "apiKey" + process.env.apiKey + "receiverEmail" + receiverEmail + "refundCommerceOrder" + refundCommerceOrder + "urlCallBack" + urlCallBack;
+
+    let sign = CryptoJS(data, process.env.secretKey);
+
+    let body = {
+        'amount': amount,
+        'apiKey': process.env.apiKey,
+        'receiverEmail': receiverEmail,
+        'refundCommerceOrder': refundCommerceOrder,
+        'urlCallBack': urlCallBack,
+        's': sign.toString()
+    }
+
+    await axios.post(process.env.apiURL + '/refund/create', qs.stringify(body), { headers: { 'Content-type': 'application/x-www-form-urlencoded' } }).then(response => {
+        console.log(response.data);
+        return res.status(200).json("ok")
+    }).catch(error => res.status(400).json(error))
+})
+
+app.post('/refund_status', async (req, res) => {
+    let token = req.body.token
+
+    let object = "apiKey=" + process.env.apiKey + "&token=" + token;
+    let sign = CryptoJS(object, process.env.secretKey);
+
+    let url = process.env.apiURL + '/refund/getStatus' + "?" + object + "&s=" + sign;
+
+    await axios.get(url).then(async (response) => {
+        return res.status(200).json(response.data)
+    }).catch(err => res.status(500).json(err))
+})
+app.post('/refund', async (req, res) => {
+    let token = req.body.token
+    console.log(token);
+
+    return res.status(200).json("ok")
+})
+
 app.listen(port, () => {
     console.log("server on port " + port);
 })
