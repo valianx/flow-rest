@@ -12,4 +12,7 @@ Los end points disponibles hasta ahora son:
 ```
 -create_payment : Crea una nueva url de pago (antes se necesita configurar el archivo .env y se debe enviar por método post el amount, subject y el email)
 -getStatus : Devuelve los detalles del estado del pago, asi como tambien los datos del pagador si estan disponible (se necesita enviar el token)
+-refund_create : Se crea un refund de un pago
+-refund_status : Devuelte el estado de un refund en progreso
+
 ```

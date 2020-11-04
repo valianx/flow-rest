@@ -7,7 +7,7 @@ const qs = require('querystring')
 const compression = require('compression')
 const morgan = require('morgan')
 
-port = 3000
+let port = 3000
 app.set('port'.port)
 app.use(express.json());
 app.use(express.urlencoded({
