@@ -47,24 +47,20 @@ app.post("/create_payment", async (req, res) => {
         'urlReturn': process.env.urlReturn,
         's': sign.toString()
     }
-
-    axios.post(process.env.apiURL + '/payment/create', qs.stringify(body), {
-        headers: {
-            'Content-type': 'application/x-www-form-urlencoded'
-        }
-    }).then(response => {
+    try {
+        let response = await axios.post(process.env.apiURL + '/payment/create', qs.stringify(body), {
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            }
+        })
         return res.status(200).json({
             url: `${response.data.url}?token=${response.data.token}`,
             flowOrder: response.data.flowOrder,
             orden: commerceOrder
         })
-
-    }).catch(
-        error => {
-            console.log(error)
-            return res.status(500).json(error)
-        }
-    )
+    } catch (err) {
+        return res.status(500).json(error.message)
+    }
 })
 
 
@@ -75,12 +71,15 @@ app.post('/getStatus', async (req, res) => {
 
     let url = process.env.apiURL + '/payment/getStatus' + "?" + object + "&s=" + sign;
 
-    await axios.get(url).then(async (response) => {
+    try {
+        let response = await axios.get(url)
         return res.status(200).json(response.data)
-    }).catch(err => res.status(500).json(err))
+    } catch (err) {
+        return res.status(500).json(err.message)
+    }
 })
 
-app.post('/refund_create', (req, res) => {
+app.post('/refund_create', async (req, res) => {
     const {
         refundCommerceOrder,
         receiverEmail,
@@ -100,18 +99,19 @@ app.post('/refund_create', (req, res) => {
         'urlCallBack': process.env.urlRefund,
         's': sign.toString()
     }
-
-    axios.post(process.env.apiURL + '/refund/create', qs.stringify(body), {
-        headers: {
-            'Content-type': 'application/x-www-form-urlencoded'
-        }
-    }).then(response => {
-        console.log(response.data);
-        return res.status(200).json("ok")
-    }).catch(error => res.status(400).json(error))
+    try {
+        let response = await axios.post(process.env.apiURL + '/refund/create', qs.stringify(body), {
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            }
+        })
+        return res.status(200).json(response.data)
+    } catch (error) {
+        return res.status(400).json(error.message)
+    }
 })
 
-app.post('/refund_status', (req, res) => {
+app.post('/refund_status', async (req, res) => {
     let token = req.body.token
 
     let object = "apiKey=" + process.env.apiKey + "&token=" + token;
@@ -119,9 +119,12 @@ app.post('/refund_status', (req, res) => {
 
     let url = process.env.apiURL + '/refund/getStatus' + "?" + object + "&s=" + sign;
 
-    axios.get(url).then(async (response) => {
+    try {
+        let response = axios.get(url)
         return res.status(200).json(response.data)
-    }).catch(err => res.status(500).json(err))
+    } catch (error) {
+        return res.status(500).json(error.message)
+    }
 })
 
 app.listen(port, () => {
