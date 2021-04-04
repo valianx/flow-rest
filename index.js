@@ -25,9 +25,9 @@ app.post("/create_payment", async (req, res) => {
     } = req.body
 
 
-    if (amount == null) return res.status(400).json("amount es requerido")
-    if (subject == null) return res.status(400).json("subject es requerido")
-    if (email == null) return res.status(400).json("email es requerido")
+    if (!amount) return res.status(400).json("amount es requerido")
+    if (!subject) return res.status(400).json("subject es requerido")
+    if (!email) return res.status(400).json("email es requerido")
     let commerceOrder = Date.now()
     let timeout = 60 * 10
 
